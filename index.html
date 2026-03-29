@@ -1,129 +1,535 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>S.U.N.I.L | Interstellar Portal v5.0</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>{ S.U.N.I.L } — Interstellar Bio Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700;900&display=swap" rel="stylesheet" />
 <style>
-    /* ⚛️ AESTHETIC MASTER VARIABLES */
-    :root {
-        --hacker-green: #00ff00;
-        --text-white: #ffffff;
-        --border-glass: rgba(255, 255, 255, 0.1);
-        --scroll-thumb: rgba(0, 255, 0, 0.2);
-    }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; font-family: 'Courier New', Courier, monospace; }
-    
-    /* 🌌 DEEP SPACE BACKGROUND - Fixed & Static for Guaranteed Load */
-    .deep-space-bg {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: -100;
-        background: url('https://images.unsplash.com/photo-1543722530-d2c3201371e7?q=80&w=2000&auto=format&fit=crop') no-repeat center center fixed;
-        background-size: cover;
-        filter: brightness(45%);
-    }
+  :root {
+    --green:       #00ff88;
+    --green-dim:   #00cc66;
+    --green-glow:  rgba(0,255,136,0.25);
+    --green-faint: rgba(0,255,136,0.08);
+    --glass-bg:    rgba(5,15,30,0.45);
+    --glass-brd:   rgba(0,255,136,0.18);
+    --white:       #e8f4ff;
+    --mono:        'Share Tech Mono', 'Courier New', monospace;
+    --display:     'Orbitron', sans-serif;
+  }
 
-    /* 🛡️ SECURITY OVERLAY (LOGIN) */
-    #verifyOverlay { position: fixed; top:0; left:0; width:100%; height:100%; display: flex; justify-content: center; align-items: center; z-index: 1000; background: rgba(0,0,0,0.6); }
-    
-    /* Highly Transparent iOS Tile */
-    .glass-box { 
-        position: relative;
-        z-index: 10;
-        background: rgba(255, 255, 255, 0.05); /* HIGHLY TRANSPARENT */
-        border: 1px solid var(--border-glass); 
-        border-radius: 12px; 
-        box-shadow: 0 0 40px rgba(0, 0, 0, 0.5); 
-        backdrop-filter: blur(10px); /* ISO BLUR */
-        padding: 30px;
-        transition: opacity 0.5s ease;
-    }
+  html, body {
+    width: 100%; height: 100%;
+    overflow-x: hidden;
+    font-family: var(--mono);
+    background: #000;
+    color: var(--green);
+  }
 
-    .verify-box { width: 85%; max-width: 400px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2); }
-    input { width: 90%; padding: 12px; margin: 20px 0; background: rgba(255,255,255,0.05); border: 1px solid #fff; color: #fff; text-align: center; font-family: inherit; }
-    button { padding: 12px 25px; background: transparent; border: 1px solid #fff; color: #fff; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; font-family: inherit; transition: 0.3s; }
-    button:hover { background: #fff; color: #000; }
+  #starfield {
+    position: fixed; inset: 0; z-index: 0;
+    width: 100%; height: 100%;
+  }
 
-    /* 🛰️ MAIN BIO CONSOLE */
-    #bioConsole { width: 90%; max-width: 900px; margin: 5vh auto; display: none; max-height: 80vh; overflow-y: auto; padding: 40px; }
-    
-    .console-header { text-align: center; border-bottom: 2px solid var(--hacker-green); margin-bottom: 25px; padding-bottom: 15px; }
-    .console-header h1 { letter-spacing: 10px; margin: 0; color: #fff; font-size: 32px; }
-    .console-header p { font-size: 11px; color: var(--hacker-green); margin: 5px 0 0 0; letter-spacing: 3px; }
+  .nebula {
+    position: fixed; inset: 0; z-index: 1;
+    pointer-events: none;
+  }
+  .nebula-1 {
+    background: radial-gradient(ellipse 80% 60% at 20% 30%,
+      rgba(0,80,160,0.28) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 80% at 80% 70%,
+      rgba(120,0,200,0.20) 0%, transparent 65%);
+    animation: nebulaDrift 30s ease-in-out infinite alternate;
+  }
+  .nebula-2 {
+    background: radial-gradient(ellipse 50% 40% at 60% 20%,
+      rgba(0,200,120,0.10) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 30% 80%,
+      rgba(200,80,0,0.10) 0%, transparent 60%);
+    animation: nebulaDrift 45s ease-in-out infinite alternate-reverse;
+  }
+  @keyframes nebulaDrift {
+    0%   { transform: scale(1)   translateX(0)    translateY(0); }
+    50%  { transform: scale(1.08) translateX(2%)  translateY(-2%); }
+    100% { transform: scale(1.05) translateX(-2%) translateY(3%); }
+  }
 
-    .typing-text { font-size: 15px; line-height: 1.8; color: var(--hacker-green); white-space: pre-wrap; }
-    .cursor { display: inline-block; width: 8px; height: 18px; background: var(--hacker-green); animation: blink 0.7s infinite; }
-    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-    
-    /* Custom Scrollbar */
-    #bioConsole::-webkit-scrollbar { width: 4px; }
-    #bioConsole::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 4px; }
-    #bioConsole::-webkit-scrollbar-thumb:hover { background: rgba(0, 255, 0, 0.4); }
+  .scanlines {
+    position: fixed; inset: 0; z-index: 2; pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 3px,
+      rgba(0,0,0,0.12) 3px, rgba(0,0,0,0.12) 4px
+    );
+  }
+
+  #app {
+    position: relative; z-index: 10;
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border: 1px solid var(--glass-brd);
+    border-radius: 16px;
+    box-shadow:
+      0 0 40px rgba(0,255,136,0.08),
+      0 8px 64px rgba(0,0,0,0.6),
+      inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+
+  #login-tile {
+    width: min(440px, 100%);
+    padding: 40px 36px;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  #login-tile.visible { opacity: 1; transform: translateY(0); }
+
+  .portal-header {
+    font-family: var(--display);
+    font-size: clamp(2rem, 8vw, 3.4rem);
+    font-weight: 900;
+    color: var(--white);
+    letter-spacing: 0.18em;
+    text-shadow:
+      0 0 20px rgba(200,230,255,0.6),
+      0 0 60px rgba(100,160,255,0.3);
+    margin-bottom: 6px;
+  }
+  .portal-sub {
+    font-size: 0.68rem;
+    color: var(--green-dim);
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    opacity: 0.8;
+  }
+
+  .divider { border: none; border-top: 1px solid var(--glass-brd); margin: 24px 0; }
+
+  .field-label {
+    display: block; font-size: 0.7rem; color: var(--green-dim);
+    letter-spacing: 0.3em; text-transform: uppercase;
+    margin-bottom: 10px; text-align: left;
+  }
+  .field-input {
+    width: 100%;
+    background: rgba(0,255,136,0.05);
+    border: 1px solid rgba(0,255,136,0.25);
+    border-radius: 8px;
+    color: var(--green);
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    padding: 12px 14px;
+    outline: none;
+    caret-color: var(--green);
+    transition: border-color 0.3s, box-shadow 0.3s;
+    letter-spacing: 0.05em;
+  }
+  .field-input::placeholder { color: rgba(0,255,136,0.3); }
+  .field-input:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px var(--green-faint), 0 0 20px var(--green-glow);
+  }
+
+  #init-btn {
+    margin-top: 24px; width: 100%; padding: 14px;
+    background: linear-gradient(135deg, rgba(0,255,136,0.15), rgba(0,200,100,0.08));
+    border: 1px solid var(--green); border-radius: 8px;
+    color: var(--green); font-family: var(--display);
+    font-size: 0.8rem; font-weight: 700;
+    letter-spacing: 0.35em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.3s;
+    position: relative; overflow: hidden;
+  }
+  #init-btn::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(0,255,136,0.2), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  #init-btn:hover::before { opacity: 1; }
+  #init-btn:hover {
+    box-shadow: 0 0 30px var(--green-glow), 0 0 60px rgba(0,255,136,0.1);
+    transform: translateY(-1px);
+  }
+
+  .status-bar {
+    margin-top: 20px; font-size: 0.65rem;
+    color: rgba(0,255,136,0.4); letter-spacing: 0.2em;
+  }
+  .blink { animation: blink 1.2s step-end infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  #bio-console {
+    display: none; width: min(700px, 100%); max-height: 90vh;
+    padding: 0; flex-direction: column;
+    opacity: 0; transform: scale(0.97);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+    overflow: hidden;
+  }
+  #bio-console.visible { display: flex; opacity: 1; transform: scale(1); }
+
+  .console-topbar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 20px; border-bottom: 1px solid var(--glass-brd);
+    background: rgba(0,255,136,0.04); flex-shrink: 0;
+  }
+  .dot { width: 11px; height: 11px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #ffbd2e; }
+  .dot-g { background: #28c840; }
+  .console-title {
+    margin-left: 8px; font-size: 0.7rem;
+    letter-spacing: 0.3em; color: rgba(0,255,136,0.55); text-transform: uppercase;
+  }
+  .console-badge {
+    margin-left: auto; font-size: 0.6rem; color: var(--green);
+    border: 1px solid var(--glass-brd); border-radius: 20px;
+    padding: 2px 10px; letter-spacing: 0.2em;
+    animation: pulse-border 2s ease-in-out infinite;
+  }
+  @keyframes pulse-border {
+    0%,100%{ box-shadow: 0 0 0 0 transparent; }
+    50%{ box-shadow: 0 0 8px var(--green-glow); }
+  }
+
+  .console-header {
+    padding: 28px 28px 20px; text-align: center;
+    flex-shrink: 0; border-bottom: 1px solid var(--glass-brd);
+  }
+  .console-name {
+    font-family: var(--display);
+    font-size: clamp(2.2rem, 9vw, 3.8rem);
+    font-weight: 900; color: var(--white); letter-spacing: 0.2em;
+    text-shadow:
+      0 0 30px rgba(200,230,255,0.7),
+      0 0 80px rgba(100,180,255,0.35),
+      0 2px 4px rgba(0,0,0,0.5);
+    line-height: 1.1;
+  }
+  .greeting-line {
+    margin-top: 12px; font-size: 0.8rem; color: var(--green-dim);
+    letter-spacing: 0.08em; font-style: italic; min-height: 1.4em; opacity: 0.9;
+  }
+  .visitor-tag {
+    margin-top: 8px; font-size: 0.68rem;
+    color: rgba(0,255,136,0.5); letter-spacing: 0.25em;
+  }
+
+  .console-body {
+    padding: 20px 24px 24px; overflow-y: auto;
+    flex: 1; scroll-behavior: smooth;
+  }
+  .console-body::-webkit-scrollbar { width: 4px; }
+  .console-body::-webkit-scrollbar-track { background: transparent; }
+  .console-body::-webkit-scrollbar-thumb { background: rgba(0,255,136,0.3); border-radius: 2px; }
+
+  #bio-output {
+    white-space: pre-wrap; word-break: break-word;
+    font-size: clamp(0.78rem, 2.4vw, 0.88rem);
+    line-height: 1.85; color: var(--green); letter-spacing: 0.04em;
+  }
+
+  .cursor-end {
+    display: inline-block; width: 8px; height: 1.1em;
+    background: var(--green); vertical-align: text-bottom;
+    animation: blink 0.9s step-end infinite; margin-left: 2px;
+  }
+
+  .explore-btn-wrap {
+    padding: 0 24px 28px; text-align: center; flex-shrink: 0;
+  }
+  #explore-btn {
+    display: none; padding: 14px 36px;
+    background: linear-gradient(135deg, rgba(0,255,136,0.18), rgba(0,150,80,0.1));
+    border: 1px solid var(--green); border-radius: 40px;
+    color: var(--green); font-family: var(--display);
+    font-size: 0.75rem; font-weight: 700;
+    letter-spacing: 0.3em; text-transform: uppercase;
+    text-decoration: none; cursor: pointer;
+    transition: all 0.35s; animation: fadeUp 0.6s ease forwards;
+    box-shadow: 0 0 20px rgba(0,255,136,0.1);
+  }
+  #explore-btn:hover {
+    background: linear-gradient(135deg, rgba(0,255,136,0.30), rgba(0,200,100,0.15));
+    box-shadow: 0 0 40px var(--green-glow), 0 0 80px rgba(0,255,136,0.08);
+    transform: translateY(-2px) scale(1.02);
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(14px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  @media (max-width: 480px) {
+    #app { padding: 12px; align-items: flex-start; padding-top: 20px; }
+    #login-tile { padding: 28px 20px; }
+    .console-header { padding: 20px 16px 16px; }
+    .console-body { padding: 16px 14px 16px; }
+    .explore-btn-wrap { padding: 0 14px 22px; }
+  }
 </style>
 </head>
 <body>
 
-<div class="deep-space-bg"></div>
+<canvas id="starfield"></canvas>
+<div class="nebula nebula-1"></div>
+<div class="nebula nebula-2"></div>
+<div class="scanlines"></div>
 
-<div id="verifyOverlay">
-    <div class="glass-box verify-box">
-        <h2 style="letter-spacing:4px; margin:0; color:#fff;">IDENTITY CHECK</h2>
-        <p style="font-size:10px; color:var(--hacker-green);">[ CONNECTING TO LANIKEA NETWORK... ]</p>
-        <input type="text" id="uName" placeholder="ENTER YOUR ALIAS" autocomplete="off">
-        <br>
-        <button onclick="startMission()">Initialize Portal</button>
+<div id="app">
+
+  <div id="login-tile" class="glass-card">
+    <div class="portal-header">{ S.U.N.I.L }</div>
+    <div class="portal-sub">Interstellar Bio Portal · v2.0.26</div>
+    <hr class="divider" />
+    <label class="field-label" for="alias-input">[ Identity Check ] — Enter Name/Alias</label>
+    <input id="alias-input" class="field-input" type="text"
+           placeholder="e.g. Voyager-1 · Carl Sagan · Ghost" autocomplete="off" />
+    <button id="init-btn" onclick="initPortal()">⬡ Initialize Sequence</button>
+    <div class="status-bar">SYS_READY <span class="blink">▋</span> &nbsp;|&nbsp; AWAITING_IDENTITY</div>
+  </div>
+
+  <div id="bio-console" class="glass-card">
+    <div class="console-topbar">
+      <span class="dot dot-r"></span>
+      <span class="dot dot-y"></span>
+      <span class="dot dot-g"></span>
+      <span class="console-title">bio-console · root@sunil</span>
+      <span class="console-badge">● LIVE</span>
     </div>
-</div>
-
-<div id="bioConsole" class="glass-box">
     <div class="console-header">
-        <h1>{ S.U.N.I.L }</h1>
-        <p>SINGULARITY • UNIVERSE • NUCLEUS • ION • LIFE</p>
+      <div class="console-name">{ S.U.N.I.L }</div>
+      <div class="greeting-line" id="greeting-line"></div>
+      <div class="visitor-tag" id="visitor-tag"></div>
     </div>
-    <div id="typewriter" class="typing-text"></div><span class="cursor" id="cursor"></span>
+    <div class="console-body" id="scroll-body">
+      <pre id="bio-output"><span class="cursor-end" id="cursor"></span></pre>
+    </div>
+    <div class="explore-btn-wrap">
+      <a id="explore-btn" href="https://solarsystem.nasa.gov" target="_blank" rel="noopener">
+        🚀 &nbsp;Explore Universe
+      </a>
+    </div>
+  </div>
+
 </div>
 
 <script>
-    let i = 0;
-    let finalBioText = "";
+(function () {
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  let W, H, stars = [], shootingStars = [];
 
-    function startMission() {
-        const name = document.getElementById('uName').value;
-        if(!name.trim()) { alert("[ ACCESS DENIED: IDENTIFY YOURSELF ]"); return; }
-        
-        // --- Dynamic Randomized Greetings Protocol ---
-        const greetings = [
-            `[AUTH] Welcome, ${name}. Your atoms are traceable to an ancient Supernova. ✨`,
-            `[AUTH] Greetings, ${name}. Our cosmic coordinates have finally aligned. 🌌`,
-            `[AUTH] Hello, ${name}. Your curiosity is the only fight against entropy. ⚛️`
-        ];
-        const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
 
-        // --- POINT-WISE DECODED CONTENT ---
-        finalBioText = `${randomGreeting}\n\n[INITIALIZING DATA TRANSMISSION...]\n\n"Biology in my veins, Physics in my soul. 🧬⚛️"\nTime is relative, Curiosity is constant. ⏳⚛️\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n$Me = Curiosity / Entropy$ 🌀\nAbsolute Zero > at {0 K}❄️ 🧊 Stay Cool.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n📡 ABOUT ME:\n→ LOCALIZED COLLECTION OF ATOMS\n→ 95% OBSESSED WITH UNSEEN UNIVERSE\n→ (DARK MATTER & DARK ENERGY)\n\n🔬 SKILLS:\n→ WEB DEVELOPMENT | CODE | CREATIVITY\n→ PHYSICS ENTHUSIAST | ASTRONOMY NERD\n→ UI/UX DESIGNER | CREATIVE THINKER\n\n🌟 MISSION:\n→ EXPLORE 'THEORY OF EVERYTHING'\n→ UNITE QUANTUM WITH COSMIC\n→ SEE THE FIRST CELL & LAST STAR 🦠🌌\n\n💫 CURRENT LOCATION:\n→ ORBITING INTERSTELLAR WEB\n→ 3RD ROCK FROM G2V STAR\n\n🚀 NEXT DESTINATION:\n→ INTERSECTION OF SCIENCE & ART\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n[DECODE COMPLETE. PORTAL IS ACTIVE]\n\n👉 EXPLORE SPACE 🪐:\n→ [https://eyes.nasa.gov/apps/solar-system/#/home](https://eyes.nasa.gov/apps/solar-system/#/home)\n\n[END TRANSMISSION]`;
-
-        document.getElementById('verifyOverlay').style.display = 'none';
-        document.getElementById('bioConsole').style.display = 'block';
-        typeWriter();
+  function initStars() {
+    stars = [];
+    const count = Math.floor((W * H) / 1400);
+    for (let i = 0; i < count; i++) {
+      stars.push({
+        x: Math.random() * W, y: Math.random() * H,
+        r: Math.random() * 1.6 + 0.2,
+        alpha: Math.random() * 0.7 + 0.3,
+        speed: Math.random() * 0.25 + 0.05,
+        twinkle: Math.random() * Math.PI * 2,
+        twinkleSpeed: Math.random() * 0.03 + 0.008,
+        color: ['255,255,255','200,220,255','255,220,200','200,255,240'][Math.floor(Math.random()*4)]
+      });
     }
+  }
 
-    function typeWriter() {
-        if (i < finalBioText.length) {
-            document.getElementById("typewriter").textContent += finalBioText.charAt(i);
-            i++;
-            // Auto Scroll
-            const consoleBox = document.getElementById('bioConsole');
-            consoleBox.scrollTop = consoleBox.scrollHeight;
-            setTimeout(typeWriter, 35);
-        } else {
-            document.getElementById('cursor').style.display = 'none';
-        }
+  function spawnShootingStar() {
+    if (Math.random() > 0.008) return;
+    const angle = (Math.random() * 30 + 15) * Math.PI / 180;
+    shootingStars.push({
+      x: Math.random() * W * 0.7, y: Math.random() * H * 0.4,
+      vx: Math.cos(angle) * (8 + Math.random() * 6),
+      vy: Math.sin(angle) * (8 + Math.random() * 6),
+      len: 80 + Math.random() * 100, alpha: 1, life: 1
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    const grd = ctx.createRadialGradient(W*.5,H*.4,0,W*.5,H*.4,Math.max(W,H)*.75);
+    grd.addColorStop(0,'#0a0e22'); grd.addColorStop(.5,'#060818'); grd.addColorStop(1,'#020408');
+    ctx.fillStyle = grd; ctx.fillRect(0,0,W,H);
+
+    stars.forEach(s => {
+      s.twinkle += s.twinkleSpeed;
+      const a = s.alpha * (0.6 + 0.4 * Math.sin(s.twinkle));
+      s.y -= s.speed * 0.12; if (s.y < 0) s.y = H;
+      const glow = ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*2.5);
+      glow.addColorStop(0,`rgba(${s.color},${a})`); glow.addColorStop(1,`rgba(${s.color},0)`);
+      ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(s.x,s.y,s.r*2.5,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = `rgba(${s.color},${Math.min(a*1.4,1)})`;
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();
+    });
+
+    spawnShootingStar();
+    shootingStars = shootingStars.filter(ss => ss.life > 0);
+    shootingStars.forEach(ss => {
+      ss.x += ss.vx; ss.y += ss.vy; ss.life -= 0.025;
+      const g = ctx.createLinearGradient(ss.x,ss.y,ss.x-ss.vx*(ss.len/10),ss.y-ss.vy*(ss.len/10));
+      g.addColorStop(0,`rgba(255,255,255,${ss.life*.9})`); g.addColorStop(1,'rgba(255,255,255,0)');
+      ctx.strokeStyle=g; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.moveTo(ss.x,ss.y);
+      ctx.lineTo(ss.x-ss.vx*(ss.len/10),ss.y-ss.vy*(ss.len/10)); ctx.stroke();
+    });
+    requestAnimationFrame(draw);
+  }
+  resize(); initStars(); draw();
+  window.addEventListener('resize', () => { resize(); initStars(); });
+})();
+
+window.addEventListener('load', () => {
+  setTimeout(() => document.getElementById('login-tile').classList.add('visible'), 300);
+});
+
+document.getElementById('alias-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') initPortal();
+});
+
+const greetings = [
+  "Your atoms were once part of the same star as mine.",
+  "You are the universe experiencing itself.",
+  "Every atom in your body was forged in a dying star.",
+  "We are starstuff, pondering the stars.",
+  "The cosmos is within us — we are made of star-stuff.",
+  "You exist at the intersection of all improbabilities.",
+  "13.8 billion years of cosmic history brought you here.",
+  "Welcome, fellow arrangement of stardust.",
+  "In an infinite universe, you are a finite miracle.",
+  "The Milky Way noticed you arrived."
+];
+
+function buildBioLines(name) {
+  return [
+    ``,
+    `┌─────────────────────────────────────────────┐`,
+    `│          IDENTITY CONFIRMED: ${name.substring(0,16).padEnd(16)}│`,
+    `└─────────────────────────────────────────────┘`,
+    ``,
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+    ` CORE PROFILE`,
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+    ``,
+    `  → Biology in my veins, Physics in my soul. 🧬⚛️`,
+    ``,
+    `  → Me = Curiosity / Entropy  🌀`,
+    `     (The higher the curiosity, the lower the entropy)`,
+    ``,
+    `  → Status: Absolute Zero > at { 0 K } ❄️`,
+    `     (Entropy minimised. Signal maximised.)`,
+    ``,
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+    ` ABOUT ME`,
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+    ``,
+    `  → A localised collection of atoms,`,
+    `     traceable to an ancient Supernova explosion.`,
+    ``,
+    `  → Carbon-based lifeform; optimised for curiosity,`,
+    `     pattern-recognition, and stargazing.`,
+    ``,
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+    ` MISSION`,
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+    ``,
+    `  → Explore the 'Theory of Everything.'`,
+    ``,
+    `  → Bridge the gap between Quantum Mechanics`,
+    `     and Cosmic-scale General Relativity.`,
+    ``,
+    `  → Find the equation that unites the very small`,
+    `     with the impossibly vast.`,
+    ``,
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+    ` CURRENT COORDINATES`,
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+    ``,
+    `  → Planet  : 3rd Rock from a G2V Main-Sequence Star`,
+    `  → System  : Sol · Orion Arm`,
+    `  → Galaxy  : Milky Way · Virgo Supercluster`,
+    `  → Filament: Laniakea Supercluster`,
+    `  → Universe: Observable · Radius 46.5 Billion ly`,
+    ``,
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+    ` TRANSMISSION COMPLETE.`,
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+    ``,
+    ` >> Click below to continue the journey... 🚀`,
+    ``
+  ];
+}
+
+function typeLines(lines, outputEl, scrollEl, onDone) {
+  let lineIdx = 0, charIdx = 0, text = '';
+  const cursor = document.getElementById('cursor');
+  const delays = { '→':18,'━':10,'│':12,'┌':12,'└':12 };
+
+  function nextChar() {
+    if (lineIdx >= lines.length) { cursor && cursor.remove(); onDone && onDone(); return; }
+    const line = lines[lineIdx];
+    if (charIdx < line.length) {
+      text += line[charIdx];
+      charIdx++;
+      outputEl.textContent = text;
+      if (cursor) outputEl.appendChild(cursor);
+      scrollEl.scrollTop = scrollEl.scrollHeight;
+      setTimeout(nextChar, delays[line[charIdx-1]] || (line[charIdx-1]===' ' ? 4 : 14));
+    } else {
+      text += '\n';
+      outputEl.textContent = text;
+      if (cursor) outputEl.appendChild(cursor);
+      scrollEl.scrollTop = scrollEl.scrollHeight;
+      lineIdx++; charIdx = 0;
+      setTimeout(nextChar, line.startsWith('━') ? 80 : line==='' ? 30 : 22);
     }
+  }
+  nextChar();
+}
+
+function initPortal() {
+  const name = document.getElementById('alias-input').value.trim() || 'Unknown Entity';
+  document.getElementById('greeting-line').textContent =
+    `"${greetings[Math.floor(Math.random() * greetings.length)]}"`;
+  document.getElementById('visitor-tag').textContent =
+    `VISITOR: ${name.toUpperCase()} · ${new Date().toISOString().slice(0,10)} · SESSION OPEN`;
+
+  const loginTile = document.getElementById('login-tile');
+  const bioConsole = document.getElementById('bio-console');
+  loginTile.style.opacity = '0';
+  loginTile.style.transform = 'scale(0.95)';
+  loginTile.style.transition = 'opacity 0.5s, transform 0.5s';
+
+  setTimeout(() => {
+    loginTile.style.display = 'none';
+    bioConsole.style.display = 'flex';
+    void bioConsole.offsetWidth;
+    bioConsole.classList.add('visible');
+    const outputEl = document.getElementById('bio-output');
+    const scrollEl = document.getElementById('scroll-body');
+    outputEl.textContent = '';
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor-end'; cursor.id = 'cursor';
+    outputEl.appendChild(cursor);
+    setTimeout(() => {
+      typeLines(buildBioLines(name), outputEl, scrollEl, () => {
+        document.getElementById('explore-btn').style.display = 'inline-block';
+      });
+    }, 600);
+  }, 500);
+}
 </script>
 </body>
 </html>
