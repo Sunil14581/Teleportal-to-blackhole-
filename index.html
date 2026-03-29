@@ -1,269 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>S.U.N.I.L | Interstellar Portal</title>
-    <style>
-        :root {
-            --neon-green: #00ff41;
-            --dim-green: rgba(0, 255, 65, 0.2);
-            --bg-black: #000800;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>S.U.N.I.L | Interstellar Portal v5.0</title>
+<style>
+    /* ⚛️ AESTHETIC MASTER VARIABLES */
+    :root {
+        --hacker-green: #00ff00;
+        --text-white: #ffffff;
+        --border-glass: rgba(255, 255, 255, 0.1);
+        --scroll-thumb: rgba(0, 255, 0, 0.2);
+    }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        body, html { 
-            height: 100%; 
-            width: 100%;
-            background-color: var(--bg-black);
-            font-family: 'Courier New', Courier, monospace;
-            color: var(--neon-green);
-            overflow: hidden;
-        }
+    body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; font-family: 'Courier New', Courier, monospace; }
+    
+    /* 🌌 DEEP SPACE BACKGROUND - Fixed & Static for Guaranteed Load */
+    .deep-space-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -100;
+        background: url('https://images.unsplash.com/photo-1543722530-d2c3201371e7?q=80&w=2000&auto=format&fit=crop') no-repeat center center fixed;
+        background-size: cover;
+        filter: brightness(45%);
+    }
 
-        /* 🌌 DYNAMIC STARFIELD BACKGROUND */
-        #starfield {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            background: radial-gradient(circle at center, #001500 0%, #000000 100%);
-        }
+    /* 🛡️ SECURITY OVERLAY (LOGIN) */
+    #verifyOverlay { position: fixed; top:0; left:0; width:100%; height:100%; display: flex; justify-content: center; align-items: center; z-index: 1000; background: rgba(0,0,0,0.6); }
+    
+    /* Highly Transparent iOS Tile */
+    .glass-box { 
+        position: relative;
+        z-index: 10;
+        background: rgba(255, 255, 255, 0.05); /* HIGHLY TRANSPARENT */
+        border: 1px solid var(--border-glass); 
+        border-radius: 12px; 
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.5); 
+        backdrop-filter: blur(10px); /* ISO BLUR */
+        padding: 30px;
+        transition: opacity 0.5s ease;
+    }
 
-        .star {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            opacity: 0.5;
-            animation: twinkle var(--duration) infinite ease-in-out;
-        }
+    .verify-box { width: 85%; max-width: 400px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2); }
+    input { width: 90%; padding: 12px; margin: 20px 0; background: rgba(255,255,255,0.05); border: 1px solid #fff; color: #fff; text-align: center; font-family: inherit; }
+    button { padding: 12px 25px; background: transparent; border: 1px solid #fff; color: #fff; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; font-family: inherit; transition: 0.3s; }
+    button:hover { background: #fff; color: #000; }
 
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.2); }
-        }
+    /* 🛰️ MAIN BIO CONSOLE */
+    #bioConsole { width: 90%; max-width: 900px; margin: 5vh auto; display: none; max-height: 80vh; overflow-y: auto; padding: 40px; }
+    
+    .console-header { text-align: center; border-bottom: 2px solid var(--hacker-green); margin-bottom: 25px; padding-bottom: 15px; }
+    .console-header h1 { letter-spacing: 10px; margin: 0; color: #fff; font-size: 32px; }
+    .console-header p { font-size: 11px; color: var(--hacker-green); margin: 5px 0 0 0; letter-spacing: 3px; }
 
-        /* 🛡️ SECURITY OVERLAY */
-        #verifyOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            background: rgba(0, 0, 0, 0.9);
-            transition: opacity 0.8s ease, visibility 0.8s;
-        }
-
-        .glass-panel {
-            width: 85%;
-            max-width: 400px;
-            padding: 30px;
-            background: rgba(0, 20, 0, 0.8);
-            border: 1px solid var(--neon-green);
-            border-radius: 15px;
-            box-shadow: 0 0 20px var(--dim-green);
-            text-align: center;
-            backdrop-filter: blur(10px);
-        }
-
-        h2 { font-size: 1.2rem; letter-spacing: 3px; margin-bottom: 10px; text-transform: uppercase; }
-        .status-line { font-size: 0.7rem; color: var(--dim-green); margin-bottom: 25px; animation: blink 1.5s infinite; }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--neon-green);
-            color: var(--neon-green);
-            text-align: center;
-            font-family: inherit;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            outline: none;
-        }
-
-        .btn {
-            padding: 12px 30px;
-            background: transparent;
-            border: 1px solid var(--neon-green);
-            color: var(--neon-green);
-            cursor: pointer;
-            font-family: inherit;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            transition: all 0.3s;
-        }
-
-        .btn:hover { background: var(--neon-green); color: black; box-shadow: 0 0 15px var(--neon-green); }
-
-        /* 🛰️ BIO CONSOLE */
-        #bioConsole {
-            position: relative;
-            z-index: 10;
-            width: 90%;
-            max-width: 800px;
-            margin: 4vh auto;
-            height: 85vh;
-            display: none; /* Initially hidden */
-            flex-direction: column;
-            background: rgba(0, 5, 0, 0.85);
-            border: 1px solid var(--dim-green);
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 0 40px rgba(0,0,0,1);
-        }
-
-        .console-header {
-            text-align: center;
-            border-bottom: 1px solid var(--dim-green);
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-
-        .console-header h1 { font-size: 1.8rem; letter-spacing: 10px; color: white; }
-        .console-header p { font-size: 0.6rem; letter-spacing: 2px; color: var(--neon-green); margin-top: 5px; opacity: 0.7; }
-
-        #typewriter-container {
-            flex-grow: 1;
-            overflow-y: auto;
-            font-size: 14px;
-            line-height: 1.8;
-            padding-right: 10px;
-            scrollbar-width: thin;
-            scrollbar-color: var(--neon-green) transparent;
-        }
-
-        .cursor {
-            display: inline-block;
-            width: 8px;
-            height: 15px;
-            background: var(--neon-green);
-            animation: blink 0.8s infinite;
-            vertical-align: middle;
-        }
-
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-
-        /* 🪐 NASA BUTTON */
-        #explorerBtn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 100;
-            display: none;
-        }
-
-        .nasa-btn {
-            padding: 10px 15px;
-            background: black;
-            border: 1px solid white;
-            color: white;
-            font-size: 10px;
-            cursor: pointer;
-            text-transform: uppercase;
-            border-radius: 5px;
-        }
-
-        /* SCROLLBAR */
-        #typewriter-container::-webkit-scrollbar { width: 3px; }
-        #typewriter-container::-webkit-scrollbar-thumb { background: var(--neon-green); }
-    </style>
+    .typing-text { font-size: 15px; line-height: 1.8; color: var(--hacker-green); white-space: pre-wrap; }
+    .cursor { display: inline-block; width: 8px; height: 18px; background: var(--hacker-green); animation: blink 0.7s infinite; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    
+    /* Custom Scrollbar */
+    #bioConsole::-webkit-scrollbar { width: 4px; }
+    #bioConsole::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 4px; }
+    #bioConsole::-webkit-scrollbar-thumb:hover { background: rgba(0, 255, 0, 0.4); }
+</style>
 </head>
 <body>
 
-    <div id="starfield"></div>
+<div class="deep-space-bg"></div>
 
-    <div id="verifyOverlay">
-        <div class="glass-panel">
-            <h2>{ S.U.N.I.L }</h2>
-            <p class="status-line">[ SECURE ACCESS TERMINAL ]</p>
-            <input type="text" id="userInput" placeholder="ENTER ALIAS (NAME)" autocomplete="off">
-            <button class="btn" onclick="startSequence()">Login</button>
-        </div>
+<div id="verifyOverlay">
+    <div class="glass-box verify-box">
+        <h2 style="letter-spacing:4px; margin:0; color:#fff;">IDENTITY CHECK</h2>
+        <p style="font-size:10px; color:var(--hacker-green);">[ CONNECTING TO LANIKEA NETWORK... ]</p>
+        <input type="text" id="uName" placeholder="ENTER YOUR ALIAS" autocomplete="off">
+        <br>
+        <button onclick="startMission()">Initialize Portal</button>
     </div>
+</div>
 
-    <div id="bioConsole">
-        <div class="console-header">
-            <h1>{ S.U.N.I.L }</h1>
-            <p>SINGULARITY • UNIVERSE • NUCLEUS • ION • LIFE</p>
-        </div>
-        <div id="typewriter-container">
-            <span id="output"></span><span class="cursor" id="cursor"></span>
-        </div>
+<div id="bioConsole" class="glass-box">
+    <div class="console-header">
+        <h1>{ S.U.N.I.L }</h1>
+        <p>SINGULARITY • UNIVERSE • NUCLEUS • ION • LIFE</p>
     </div>
-
-    <div id="explorerBtn">
-        <button class="nasa-btn" onclick="window.open('https://eyes.nasa.gov/apps/solar-system/#/home', '_blank')">Explore Space 🪐</button>
-    </div>
+    <div id="typewriter" class="typing-text"></div><span class="cursor" id="cursor"></span>
+</div>
 
 <script>
-    // 1. Create Starfield
-    const field = document.getElementById('starfield');
-    for (let i = 0; i < 120; i++) {
-        let star = document.createElement('div');
-        star.className = 'star';
-        let size = Math.random() * 3;
-        star.style.width = size + 'px';
-        star.style.height = size + 'px';
-        star.style.left = Math.random() * 100 + '%';
-        star.style.top = Math.random() * 100 + '%';
-        star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
-        field.appendChild(star);
-    }
-
-    // 2. Logic Control
     let i = 0;
-    let bioText = "";
-    const output = document.getElementById('output');
-    const container = document.getElementById('typewriter-container');
+    let finalBioText = "";
 
-    function startSequence() {
-        const name = document.getElementById('userInput').value.trim();
-        if (!name) { alert("[ ERROR: NAME REQUIRED ]"); return; }
-
-        const greetings = [
-            `[AUTH] Welcome, ${name}. Your atoms are ancient.`,
-            `[AUTH] Greetings, ${name}. Coordinates locked.`,
-            `[AUTH] Hello, ${name}. Entropy is stable.`
-        ];
+    function startMission() {
+        const name = document.getElementById('uName').value;
+        if(!name.trim()) { alert("[ ACCESS DENIED: IDENTIFY YOURSELF ]"); return; }
         
-        const welcome = greetings[Math.floor(Math.random() * greetings.length)];
+        // --- Dynamic Randomized Greetings Protocol ---
+        const greetings = [
+            `[AUTH] Welcome, ${name}. Your atoms are traceable to an ancient Supernova. ✨`,
+            `[AUTH] Greetings, ${name}. Our cosmic coordinates have finally aligned. 🌌`,
+            `[AUTH] Hello, ${name}. Your curiosity is the only fight against entropy. ⚛️`
+        ];
+        const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
 
-        bioText = `${welcome}\n\n[INITIALIZING DATA TRANSMISSION...]\n\n"Biology in my veins, Physics in my soul." 🧬⚛️\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nMe = Curiosity / Entropy 🌀\nAbsolute Zero > at {0 K} ❄️\n\n[DECODING STARDUST LINEAGE...]\n\nI am a localized collection of Atoms, traceable to an ancient Supernova. My existence is a statistical anomaly, optimized to understand the vastness of Space.\n\nI am obsessed with the 95% invisible universe—Dark Matter and Energy. Every thought is a neural spark of electricity. 🧬\n\nI am quantum entangled with the mysteries of Black Holes. Simultaneously fascinated by DNA and Galaxies. 🦠🌌\n\n[END OF TRANSMISSION]\n[PORTAL FULLY ACTIVE]`;
+        // --- POINT-WISE DECODED CONTENT ---
+        finalBioText = `${randomGreeting}\n\n[INITIALIZING DATA TRANSMISSION...]\n\n"Biology in my veins, Physics in my soul. 🧬⚛️"\nTime is relative, Curiosity is constant. ⏳⚛️\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n$Me = Curiosity / Entropy$ 🌀\nAbsolute Zero > at {0 K}❄️ 🧊 Stay Cool.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n📡 ABOUT ME:\n→ LOCALIZED COLLECTION OF ATOMS\n→ 95% OBSESSED WITH UNSEEN UNIVERSE\n→ (DARK MATTER & DARK ENERGY)\n\n🔬 SKILLS:\n→ WEB DEVELOPMENT | CODE | CREATIVITY\n→ PHYSICS ENTHUSIAST | ASTRONOMY NERD\n→ UI/UX DESIGNER | CREATIVE THINKER\n\n🌟 MISSION:\n→ EXPLORE 'THEORY OF EVERYTHING'\n→ UNITE QUANTUM WITH COSMIC\n→ SEE THE FIRST CELL & LAST STAR 🦠🌌\n\n💫 CURRENT LOCATION:\n→ ORBITING INTERSTELLAR WEB\n→ 3RD ROCK FROM G2V STAR\n\n🚀 NEXT DESTINATION:\n→ INTERSECTION OF SCIENCE & ART\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n[DECODE COMPLETE. PORTAL IS ACTIVE]\n\n👉 EXPLORE SPACE 🪐:\n→ [https://eyes.nasa.gov/apps/solar-system/#/home](https://eyes.nasa.gov/apps/solar-system/#/home)\n\n[END TRANSMISSION]`;
 
-        // Hide login, show console
-        document.getElementById('verifyOverlay').style.opacity = '0';
-        setTimeout(() => {
-            document.getElementById('verifyOverlay').style.display = 'none';
-            document.getElementById('bioConsole').style.display = 'flex';
-            typeWriter();
-        }, 800);
+        document.getElementById('verifyOverlay').style.display = 'none';
+        document.getElementById('bioConsole').style.display = 'block';
+        typeWriter();
     }
 
     function typeWriter() {
-        if (i < bioText.length) {
-            output.textContent += bioText.charAt(i);
+        if (i < finalBioText.length) {
+            document.getElementById("typewriter").textContent += finalBioText.charAt(i);
             i++;
-            container.scrollTop = container.scrollHeight;
-            setTimeout(typeWriter, 30);
+            // Auto Scroll
+            const consoleBox = document.getElementById('bioConsole');
+            consoleBox.scrollTop = consoleBox.scrollHeight;
+            setTimeout(typeWriter, 35);
         } else {
             document.getElementById('cursor').style.display = 'none';
-            document.getElementById('explorerBtn').style.display = 'block';
         }
     }
-
-    // Enter key support
-    document.getElementById('userInput').addEventListener('keyup', (e) => {
-        if (e.key === 'Enter') startSequence();
-    });
 </script>
-
 </body>
 </html>
