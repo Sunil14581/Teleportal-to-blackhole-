@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S.U.N.I.L | Teleportal-to-blackhole</title>
+<style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #000;
+        font-family: 'Courier New', Courier, monospace;
+        color: #e0e0e0;
+    }
+
+    /* 1. Background: NASA Live Solar System (Non-Blur) */
+    .bg-frame {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        filter: brightness(45%); /* Non-Blur, just darkened for text contrast */
+    }
+
+    /* Common Glassmorphic Tile Style */
+    .glass-tile {
+        position: relative;
+        z-index: 10;
+        background: rgba(0, 0, 0, 0.7); /* Semi-transparent black overlay */
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        backdrop-filter: blur(1px); /* Very subtle aesthetic blur for the tile itself */
+        box-shadow: 0 0 30px rgba(0, 255, 0, 0.1); /* Subtle green glow */
+        padding: 30px;
+    }
+
+    /* 2. Verification Tile */
+    .verification-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5); /* Overlay over the solar system */
+        display: none; /* Initially hidden, shown by JS */
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+    }
+
+    .verification-tile {
+        width: 80%;
+        max-width: 450px;
+        text-align: center;
+    }
+
+    .verify-header {
+        color: #00ff00; /* Hacker Green for security vibe */
+        letter-spacing: 2px;
+        margin-bottom: 25px;
+        text-transform: uppercase;
+    }
+
+    .input-group {
+        margin-bottom: 15px;
+        text-align: left;
+    }
+
+    .input-label {
+        display: block;
+        font-size: 14px;
+        color: #ccc;
+        margin-bottom: 5px;
+    }
+
+    .text-input {
+        width: 90%;
+        padding: 10px 15px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 5px;
+        color: #fff;
+        font-family: inherit;
+    }
+
+    .verify-btn {
+        margin-top: 15px;
+        padding: 12px 25px;
+        background: transparent;
+        border: 1px solid #00ff00;
+        color: #00ff00;
+        font-family: inherit;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .verify-btn:hover {
+        background: rgba(0, 255, 0, 0.1);
+    }
+
+    /* 3. Main Console Bio Tile */
+    .console {
+        width: 85%;
+        max-width: 900px;
+        margin: 5vh auto;
+        display: none; /* Hidden until verification */
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+
+    .header {
+        text-align: center;
+        border-bottom: 2px solid #555;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+    }
+
+    .name-title {
+        font-size: 28px;
+        letter-spacing: 10px;
+        color: #fff;
+        text-transform: uppercase;
+    }
+
+    .typing-text {
+        font-size: 16px;
+        line-height: 1.8;
+        color: #fff; /* White for aesthetic readability */
+        white-space: pre-wrap;
+    }
+
+    .cursor {
+        display: inline-block;
+        width: 10px;
+        height: 20px;
+        background-color: #fff;
+        margin-left: 5px;
+        animation: blink 0.7s infinite;
+    }
+
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    .coordinates {
+        color: #ff9900;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 25px;
+        border-top: 1px solid #ff9900;
+        padding-top: 10px;
+        display: none;
+    }
+
+    /* 4. Explorer Button */
+    .explorer-btn-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: none; /* Hidden until bio complete */
+        z-index: 110;
+    }
+
+    .explorer-btn {
+        padding: 15px 30px;
+        background: transparent;
+        border: 2px solid #fff;
+        color: #fff;
+        font-family: inherit;
+        text-transform: uppercase;
+        font-size: 14px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: 0.3s;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+
+    .explorer-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+    }
+    
+</style>
+</head>
+<body>
+
+    <iframe class="bg-frame" src="https://eyes.nasa.gov/apps/solar-system/#/home?embed=true" frameborder="0"></iframe>
+
+    <div class="verification-overlay" id="verifyOverlay">
+        <div class="glass-tile verification-tile">
+            <h2 class="verify-header">[ SECURITY CHECKPOINT ]</h2>
+            <div class="input-group">
+                <label class="input-label" for="targetName">TARGET_NAME (ALIAS)</label>
+                <input class="text-input" type="text" id="targetName" placeholder="[ Enter Alias ]" required>
+            </div>
+            <div class="input-group">
+                <label class="input-label" for="targetEmail">TARGET_COORDINATES (EMAIL)</label>
+                <input class="text-input" type="email" id="targetEmail" placeholder="[ Enter Email ]" required>
+            </div>
+            <button class="verify-btn" onclick="verifyAndProceed()">DECODE BIO DATA</button>
+            <p style="font-size:10px; color:#555; margin-top:15px;">Data is quantum entangled with ground command.</p>
+        </div>
+    </div>
+
+    <div class="console glass-tile" id="bioConsole">
+        <div class="header">
+            <div class="name-title">{ S.U.N.I.L }</div>
+            <p>(Singularity • Universe • Nucleus • Ion • Life)</p>
+        </div>
+        <div class="typing-text" id="typewriter"></div>
+        <div class="cursor" id="cursor"></div>
+        <div class="coordinates" id="coords">
+            📍 Stationed at: 3rd Rock from the G2V Star,<br>
+            Laniakea | Virgo Supercluster | Sector 502
+        </div>
+    </div>
+
+    <div class="explorer-btn-container" id="explorerBtn">
+        <button class="explorer-btn" onclick="openSolarSystem()">Explore Universe 🪐</button>
+    </div>
+
+<script>
+    // --- Master Control Elements ---
+    const verifyOverlay = document.getElementById('verifyOverlay');
+    const bioConsole = document.getElementById('bioConsole');
+    const typewriterElement = document.getElementById('typewriter');
+    const coordinatesElement = document.getElementById('coords');
+    const cursorElement = document.getElementById('cursor');
+    const explorerBtn = document.getElementById('explorerBtn');
+
+    const targetNameInput = document.getElementById('targetName');
+    const targetEmailInput = document.getElementById('targetEmail');
+
+    // --- The 386 Words Master Bio Text ---
+    const textToType = `
+[INITIALIZING COMMAND CENTER...]
+[CONNECTING TO LANIKEA NETWORK...]
+[AUTHORIZATION GRANTED... Hello, Target_Name]
+
+[TARGET IDENTIFIED: { S.U.N.I.L }]
+
+"Biology in my veins, Physics in my soul. 🧬⚛️
+Time is relative, Curiosity is constant. ⏳⚛️"
+
+$Me = Curiosity / Entropy$ 🌀
+
+Absolute Zero > at {0 K}❄️ 🧊 Stay Cool.
+
+---
+
+[DECODING UNIVERSAL ARCHIVE...]
+
+"We are a way for the Cosmos to know itself." 🌌
+
+Hello, World. I am a localized collection of Atoms, traceable to a ancient Supernova that exploded billions of years ago. My existence is a statistical anomaly, optimized to perceive and understand the vastness of Space and the intricacy of Life.
+
+I am obsessed with the 95% of the universe we cannot see—Dark Matter and Dark Energy. My primary directive is to explore the 'Theory of Everything,' the grand equation that unites the quantum with the cosmic.
+
+I view the world through a carbon-based lens, powered by complex chemical reactions that maintain homeostasis. Every thought I have is a cascade of neural electricity, driven by the laws of Physics and Chemical Bonding. 🧬⚛️
+
+I am quantum entangled with the mysteries of Black Holes and the expansion of Spacetime. Time Dilation is not a concept, it is a reality. As I move through space, time adjusts. I am living in a constant state of quantum superposition—simultaneously fascinated by the double helix of DNA and the spiral structure of a Galaxy. 🦠🌌
+
+[SCAN COMPLETE. Teleportation Link is now Active]`;
+
+    let index = 0;
+    const typingSpeed = 35; // ChatGPT-like speed
+
+    // --- Typing Logic ---
+    function type() {
+        if (index < textToType.length) {
+            typewriterElement.textContent += textToType.charAt(index);
+            index++;
+            // Auto scroll console
+            document.querySelector('#bioConsole').scrollTop = document.querySelector('#bioConsole').scrollHeight;
+            setTimeout(type, typingSpeed);
+        } else {
+            // Bio complete: Show Coordinates & Explorer Button
+            coordinatesElement.style.display = 'block';
+            cursorElement.style.opacity = '0'; // Hide cursor
+            setTimeout(() => {
+                explorerBtn.style.display = 'block'; // Show button after bio
+            }, 1000); // 1-second delay
+        }
+    }
+
+    // --- Verification Logic ---
+    function verifyAndProceed() {
+        const name = targetNameInput.value;
+        const email = targetEmailInput.value;
+
+        // Simple validation: Ensure both are not empty
+        if (name.trim() === "" || email.trim() === "") {
+            alert("[SECURITY BREACH: INPUT REQUIRED]");
+            return;
+        }
+
+        // Hide Verification, Show Bio
+        verifyOverlay.style.display = 'none';
+        bioConsole.style.display = 'block';
+        
+        // Update Bio text with their name
+        const updatedText = textToType.replace("Target_Name", name);
+        textToType = updatedText; // Update text variable
+        
+        // Start typing effect
+        type();
+    }
+
+    // --- Open NASA Link ---
+    function openSolarSystem() {
+        window.open('https://eyes.nasa.gov/apps/solar-system/#/home', '_blank');
+    }
+
+    // --- Phase 1: Show Verification after 5 Seconds ---
+    window.onload = function() {
+        setTimeout(() => {
+            verifyOverlay.style.display = 'flex'; // Show Verification Checkpoint
+        }, 5000); // 5-second delay
+    }
+
+</script>
+
+</body>
+</html>
