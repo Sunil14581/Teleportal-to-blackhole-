@@ -3,89 +3,90 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>S.U.N.I.L | Universal Portal</title>
+<title>S.U.N.I.L | Interstellar Portal</title>
 <style>
-    /* CSS Variables for easy color changes */
+    /* CSS Variables for Consistency */
     :root {
-        --glow: rgba(0, 255, 0, 0.4);
-        --text: #e0e0e0;
+        --hacker-green: #00ff00;
+        --hacker-green-dim: rgba(0, 255, 0, 0.7);
+        --text-white: #ffffff;
+        --glass: rgba(0, 0, 0, 0.7);
+        --border-glass: rgba(255, 255, 255, 0.1);
     }
 
     body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; font-family: 'Courier New', Courier, monospace; }
     
-    /* 🌌 SPACE BACKGROUND FIX */
-    .space-bg {
+    /* 🌌 DEEP SPACE BACKGROUND - Fixed & Static for Guaranteed Load */
+    .deep-space-bg {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        z-index: -1;
-        /* Using a high-quality space image as fallback */
-        background: url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=2000&q=80') no-repeat center center fixed;
+        z-index: -100;
+        /* A high-definition space fallback that works everywhere */
+        background: url('https://images.unsplash.com/photo-1543722530-d2c3201371e7?q=80&w=2000&auto=format&fit=crop') no-repeat center center fixed;
         background-size: cover;
-        filter: brightness(40%) contrast(120%);
-        animation: subtleZoom 20s infinite alternate;
+        filter: brightness(45%);
     }
 
-    @keyframes subtleZoom {
-        from { transform: scale(1); }
-        to { transform: scale(1.1); }
-    }
-
-    /* Transparent Glass Tile */
+    /* Common Glassmorphic Style */
     .glass-tile { 
-        background: rgba(0, 0, 0, 0.75);
-        border: 1px solid rgba(255, 255, 255, 0.1); 
+        position: relative;
+        z-index: 10;
+        background: var(--glass);
+        border: 1px solid var(--border-glass); 
         border-radius: 12px; 
-        padding: 25px; 
-        backdrop-filter: blur(5px);
-        box-shadow: 0 0 30px rgba(0,0,0,0.8);
+        box-shadow: 0 0 30px rgba(0, 255, 0, 0.1); 
+        backdrop-filter: blur(2px);
     }
     
-    #verifyOverlay { position: fixed; top:0; left:0; width:100%; height:100%; display: flex; justify-content: center; align-items: center; z-index: 100; background: rgba(0,0,0,0.4); }
-    .verify-box { width: 85%; max-width: 380px; text-align: center; border: 1px solid #fff; }
-    input { width: 80%; padding: 12px; margin: 20px 0; background: rgba(255,255,255,0.05); border: 1px solid #fff; color: #fff; text-align: center; font-family: inherit; }
+    /* 🛡️ Verification Checkpoint */
+    #verifyOverlay { position: fixed; top:0; left:0; width:100%; height:100%; display: flex; justify-content: center; align-items: center; z-index: 1000; background: rgba(0,0,0,0.6); }
+    .verify-box { width: 85%; max-width: 400px; text-align: center; border: 1px solid #fff; padding: 30px; }
+    input { width: 85%; padding: 12px; margin: 20px 0; background: rgba(255,255,255,0.05); border: 1px solid #fff; color: #fff; text-align: center; font-family: inherit; }
     button { padding: 12px 25px; background: transparent; border: 1px solid #fff; color: #fff; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; font-family: inherit; transition: 0.3s; }
     button:hover { background: #fff; color: #000; }
 
-    #bioConsole { width: 90%; max-width: 800px; margin: 5vh auto; display: none; max-height: 80vh; overflow-y: auto; position: relative; z-index: 10; }
-    .typing-text { font-size: 15px; line-height: 1.8; color: var(--text); white-space: pre-wrap; }
-    .cursor { display: inline-block; width: 10px; height: 18px; background: #fff; animation: blink 0.7s infinite; }
+    /* 🛰️ Main Bio Console */
+    #bioConsole { width: 90%; max-width: 850px; margin: 5vh auto; display: none; max-height: 80vh; overflow-y: auto; padding: 30px; }
+    .typing-text { font-size: 15px; line-height: 1.8; color: var(--hacker-green-dim); white-space: pre-wrap; }
+    .cursor { display: inline-block; width: 8px; height: 18px; background: var(--hacker-green); animation: blink 0.7s infinite; }
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
     
-    #explorerBtn { position: fixed; bottom: 20px; right: 20px; display: none; z-index: 200; }
-    .nav-btn { padding: 10px 20px; background: #000; border: 1px solid #fff; color: #fff; cursor: pointer; border-radius: 4px; font-family: inherit; font-size: 12px; }
+    /* 🪐 Explorer Button */
+    #explorerBtn { position: fixed; bottom: 20px; right: 20px; display: none; z-index: 1100; }
+    .nav-btn { padding: 10px 20px; background: #000; border: 1px solid #fff; color: #fff; cursor: pointer; border-radius: 4px; font-family: inherit; font-size: 12px; text-transform: uppercase; }
 
-    /* Scrollbar */
+    /* Custom Scrollbar */
     #bioConsole::-webkit-scrollbar { width: 4px; }
-    #bioConsole::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); }
+    #bioConsole::-webkit-scrollbar-thumb { background: rgba(0,255,0,0.2); }
 </style>
 </head>
 <body>
 
-<div class="space-bg"></div>
+<div class="deep-space-bg"></div>
 
 <div id="verifyOverlay">
     <div class="glass-tile verify-box">
-        <h3 style="letter-spacing:4px; margin:0;">IDENTITY CHECK</h3>
-        <p style="font-size:10px; color:#aaa; margin-top:5px;">[ SCANNING FOR STARDUST... ]</p>
-        <input type="text" id="uName" placeholder="ENTER ALIAS" autocomplete="off">
+        <h2 style="letter-spacing:4px; margin:0; color:#fff;">IDENTITY CHECK</h2>
+        <p style="font-size:10px; color:var(--hacker-green);">[ CONNECTING TO LANIKEA NETWORK... ]</p>
+        <input type="text" id="uName" placeholder="ENTER YOUR ALIAS" autocomplete="off">
         <br>
-        <button onclick="startMission()">INITIALIZE PORTAL</button>
+        <button onclick="startMission()">Initialize Portal</button>
     </div>
 </div>
 
 <div id="bioConsole" class="glass-tile">
-    <div style="text-align:center; border-bottom:1px solid #333; margin-bottom:20px; padding-bottom:15px;">
-        <h1 style="letter-spacing:8px; margin:0;">{ S.U.N.I.L }</h1>
-        <p style="font-size:11px; color:#888; margin:5px 0;">SINGULARITY • UNIVERSE • NUCLEUS • ION • LIFE</p>
+    <div style="text-align:center; border-bottom:1px solid #444; margin-bottom:20px; padding-bottom:15px;">
+        <h1 style="letter-spacing:8px; margin:0; color:#fff; font-size:28px;">{ S.U.N.I.L }</h1>
+        <p style="font-size:11px; color:#aaa; margin:5px 0;">SINGULARITY • UNIVERSE • NUCLEUS • ION • LIFE</p>
     </div>
     <div id="typewriter" class="typing-text"></div><span class="cursor" id="cursor"></span>
 </div>
 
 <div id="explorerBtn">
-    <button class="nav-btn" onclick="window.open('https://eyes.nasa.gov/apps/solar-system/#/home', '_blank')">EXPLORE UNIVERSE ✨</button>
+    <button class="nav-btn" onclick="window.open('https://eyes.nasa.gov/apps/solar-system/#/home', '_blank')">Explore Universe 🪐</button>
 </div>
 
 <script>
@@ -94,15 +95,19 @@
 
     function startMission() {
         const name = document.getElementById('uName').value;
-        if(!name.trim()) { alert("[ IDENTIFICATION REQUIRED ]"); return; }
+        if(!name.trim()) { alert("[ ACCESS DENIED: IDENTIFY YOURSELF ]"); return; }
         
+        // --- Random Randomized Greeting Protocol ---
         const greetings = [
-            `[LOG-IN SUCCESSFUL]\nWelcome, ${name}! Your atoms are traceable to the same Supernova as mine. ✨`,
-            `[ACCESS GRANTED]\nGreetings, ${name}! Our cosmic coordinates have finally aligned. 🌌`
+            `[CONNECTION SUCCESSFUL]\nWelcome, ${name}! Your atoms were once part of the same star as mine. It's an honor to meet a fellow traveler of the cosmos. ✨`,
+            `[ACCESS GRANTED]\nGreetings, ${name}! Out of all the galaxies and timelines, I'm glad our coordinates crossed today. 🌌`,
+            `[PORTAL OPENED]\nHello, ${name}. Your presence adds a beautiful spark of curiosity to this entropy-driven universe. ⚛️`,
+            `[STABLE LINK]\nWelcome aboard, ${name}! Stationed on the 3rd rock from the G2V star, I've been waiting for a brilliant mind like yours. 🛰️`
         ];
         const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
 
-        finalBioText = `${randomGreeting}\n\n[INITIALIZING MISSION DATA...]\n\n"Biology in my veins, Physics in my soul. 🧬⚛️"\nTime is relative, Curiosity is constant. ⏳\n\n$Me = Curiosity / Entropy$ 🌀\n\nAbsolute Zero > at {0 K}❄️ 🧊 Stay Cool.\n\n---\n[DECODING STARDUST LINEAGE...]\n\nI am a localized collection of Atoms, traceable to an ancient Supernova. My existence is a statistical anomaly, optimized to understand the vastness of Space.\n\nI am obsessed with the 95% invisible universe—Dark Matter and Energy. Every thought is a cascade of neural electricity. 🧬\n\nI am quantum entangled with the mysteries of Black Holes. Simultaneously fascinated by DNA and Galaxies. 🦠🌌\n\n[MISSION COMPLETE. LINK IS LIVE]`;
+        // --- The Full Master Bio ---
+        finalBioText = `${randomGreeting}\n\n[INITIALIZING MISSION DATA...]\n\n"Biology in my veins, Physics in my soul. 🧬⚛️"\nTime is relative, Curiosity is constant. ⏳⚛️\n\n$Me = Curiosity / Entropy$ 🌀\n\nAbsolute Zero > at {0 K}❄️ 🧊 Stay Cool.\n\n---\n[DECODING STARDUST LINEAGE...]\n\nHello, World. I am a localized collection of Atoms, traceable to an ancient Supernova. My existence is a statistical anomaly, optimized to understand the vastness of Space.\n\nI am obsessed with the 95% invisible universe—Dark Matter and Energy. Every thought is a neural spark of electricity. 🧬\n\nI am quantum entangled with the mysteries of Black Holes. Simultaneously fascinated by DNA and Galaxies. 🦠🌌\n\n[SCAN COMPLETE. MISSION IS LIVE]`;
 
         document.getElementById('verifyOverlay').style.display = 'none';
         document.getElementById('bioConsole').style.display = 'block';
@@ -117,7 +122,7 @@
             setTimeout(typeWriter, 35);
         } else {
             document.getElementById('cursor').style.display = 'none';
-            document.getElementById('explorerBtn').style.display = 'block';
+            setTimeout(() => { document.getElementById('explorerBtn').style.display = 'block'; }, 800);
         }
     }
 </script>
