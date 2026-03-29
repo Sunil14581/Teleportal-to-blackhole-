@@ -5,74 +5,81 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>S.U.N.I.L | Universal Portal</title>
 <style>
-    body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; font-family: 'Courier New', Courier, monospace; color: #fff; }
+    /* CSS Variables for easy color changes */
+    :root {
+        --glow: rgba(0, 255, 0, 0.4);
+        --text: #e0e0e0;
+    }
+
+    body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; font-family: 'Courier New', Courier, monospace; }
     
-    /* BACKGROUND FIX: NASA Solar System ALWAYS visible */
-    .bg-container {
+    /* 🌌 SPACE BACKGROUND FIX */
+    .space-bg {
         position: fixed;
         top: 0;
         left: 0;
-        width: 100vw;
-        height: 100vh;
-        z-index: -100; /* Pushed to the very back */
-        overflow: hidden;
-    }
-
-    .bg-frame {
         width: 100%;
         height: 100%;
-        border: none;
-        filter: brightness(55%) contrast(110%);
+        z-index: -1;
+        /* Using a high-quality space image as fallback */
+        background: url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=2000&q=80') no-repeat center center fixed;
+        background-size: cover;
+        filter: brightness(40%) contrast(120%);
+        animation: subtleZoom 20s infinite alternate;
     }
-    
+
+    @keyframes subtleZoom {
+        from { transform: scale(1); }
+        to { transform: scale(1.1); }
+    }
+
+    /* Transparent Glass Tile */
     .glass-tile { 
-        background: rgba(0, 0, 0, 0.75); /* Transparent black to see background */
-        border: 1px solid rgba(255, 255, 255, 0.15); 
+        background: rgba(0, 0, 0, 0.75);
+        border: 1px solid rgba(255, 255, 255, 0.1); 
         border-radius: 12px; 
         padding: 25px; 
-        box-shadow: 0 0 40px rgba(0, 0, 0, 0.5); 
-        backdrop-filter: blur(2px); /* Subtle blur for aesthetic */
+        backdrop-filter: blur(5px);
+        box-shadow: 0 0 30px rgba(0,0,0,0.8);
     }
     
-    #verifyOverlay { position: fixed; top:0; left:0; width:100%; height:100%; display: flex; justify-content: center; align-items: center; z-index: 1000; background: rgba(0,0,0,0.6); }
-    .verify-box { width: 85%; max-width: 400px; text-align: center; }
-    input { width: 85%; padding: 12px; margin: 20px 0; background: rgba(255,255,255,0.1); border: 1px solid #fff; color: #fff; text-align: center; border-radius: 5px; font-family: inherit; }
-    button { padding: 12px 25px; background: transparent; border: 1px solid #fff; color: #fff; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; font-family: inherit; }
+    #verifyOverlay { position: fixed; top:0; left:0; width:100%; height:100%; display: flex; justify-content: center; align-items: center; z-index: 100; background: rgba(0,0,0,0.4); }
+    .verify-box { width: 85%; max-width: 380px; text-align: center; border: 1px solid #fff; }
+    input { width: 80%; padding: 12px; margin: 20px 0; background: rgba(255,255,255,0.05); border: 1px solid #fff; color: #fff; text-align: center; font-family: inherit; }
+    button { padding: 12px 25px; background: transparent; border: 1px solid #fff; color: #fff; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; font-family: inherit; transition: 0.3s; }
     button:hover { background: #fff; color: #000; }
 
-    #bioConsole { width: 85%; max-width: 850px; margin: 5vh auto; display: none; max-height: 80vh; overflow-y: auto; }
-    .typing-text { font-size: 15px; line-height: 1.8; color: #efefef; white-space: pre-wrap; }
-    .cursor { display: inline-block; width: 10px; height: 18px; background: #00ff00; animation: blink 0.7s infinite; vertical-align: middle; }
+    #bioConsole { width: 90%; max-width: 800px; margin: 5vh auto; display: none; max-height: 80vh; overflow-y: auto; position: relative; z-index: 10; }
+    .typing-text { font-size: 15px; line-height: 1.8; color: var(--text); white-space: pre-wrap; }
+    .cursor { display: inline-block; width: 10px; height: 18px; background: #fff; animation: blink 0.7s infinite; }
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
     
-    #explorerBtn { position: fixed; bottom: 20px; right: 20px; display: none; z-index: 2000; }
-    .nav-btn { padding: 10px 20px; background: #000; border: 1px solid #fff; color: #fff; cursor: pointer; border-radius: 5px; font-family: inherit; }
+    #explorerBtn { position: fixed; bottom: 20px; right: 20px; display: none; z-index: 200; }
+    .nav-btn { padding: 10px 20px; background: #000; border: 1px solid #fff; color: #fff; cursor: pointer; border-radius: 4px; font-family: inherit; font-size: 12px; }
 
-    /* Scrollbar Styling */
-    #bioConsole::-webkit-scrollbar { width: 5px; }
-    #bioConsole::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); }
+    /* Scrollbar */
+    #bioConsole::-webkit-scrollbar { width: 4px; }
+    #bioConsole::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); }
 </style>
 </head>
 <body>
 
-<div class="bg-container">
-    <iframe class="bg-frame" src="https://eyes.nasa.gov/apps/solar-system/#/home?embed=true" allow="autoplay"></iframe>
-</div>
+<div class="space-bg"></div>
 
 <div id="verifyOverlay">
     <div class="glass-tile verify-box">
-        <h3 style="letter-spacing:3px; margin:0;">IDENTITY CHECK</h3>
-        <p style="font-size:10px; color:#00ff00;">[ CONNECTING TO NASA_DATABASE... ]</p>
-        <input type="text" id="uName" placeholder="ENTER YOUR ALIAS" autocomplete="off">
+        <h3 style="letter-spacing:4px; margin:0;">IDENTITY CHECK</h3>
+        <p style="font-size:10px; color:#aaa; margin-top:5px;">[ SCANNING FOR STARDUST... ]</p>
+        <input type="text" id="uName" placeholder="ENTER ALIAS" autocomplete="off">
         <br>
         <button onclick="startMission()">INITIALIZE PORTAL</button>
     </div>
 </div>
 
 <div id="bioConsole" class="glass-tile">
-    <div style="text-align:center; border-bottom:1px solid #444; margin-bottom:20px; padding-bottom:15px;">
+    <div style="text-align:center; border-bottom:1px solid #333; margin-bottom:20px; padding-bottom:15px;">
         <h1 style="letter-spacing:8px; margin:0;">{ S.U.N.I.L }</h1>
-        <p style="font-size:11px; color:#aaa; margin:5px 0;">SINGULARITY • UNIVERSE • NUCLEUS • ION • LIFE</p>
+        <p style="font-size:11px; color:#888; margin:5px 0;">SINGULARITY • UNIVERSE • NUCLEUS • ION • LIFE</p>
     </div>
     <div id="typewriter" class="typing-text"></div><span class="cursor" id="cursor"></span>
 </div>
@@ -82,22 +89,20 @@
 </div>
 
 <script>
-    let finalBioText = "";
     let i = 0;
+    let finalBioText = "";
 
     function startMission() {
         const name = document.getElementById('uName').value;
-        if(!name.trim()) { alert("[ ACCESS DENIED: IDENTIFY YOURSELF ]"); return; }
+        if(!name.trim()) { alert("[ IDENTIFICATION REQUIRED ]"); return; }
         
         const greetings = [
-            `[LOG-IN SUCCESSFUL]\nWelcome, ${name}! Your atoms were once part of the same star as mine. ✨`,
-            `[ACCESS GRANTED]\nGreetings, ${name}! In this infinite timeline, our coordinates finally matched. 🌌`,
-            `[CONNECTION STABLE]\nHello, ${name}. Your curiosity is the only thing fighting the entropy of this system. ⚛️`
+            `[LOG-IN SUCCESSFUL]\nWelcome, ${name}! Your atoms are traceable to the same Supernova as mine. ✨`,
+            `[ACCESS GRANTED]\nGreetings, ${name}! Our cosmic coordinates have finally aligned. 🌌`
         ];
-
         const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
 
-        finalBioText = `${randomGreeting}\n\n[INITIALIZING MISSION DATA...]\n\n"Biology in my veins, Physics in my soul. 🧬⚛️"\nTime is relative, Curiosity is constant. ⏳\n\n$Me = Curiosity / Entropy$ 🌀\n\nAbsolute Zero > at {0 K}❄️ 🧊 Stay Cool.\n\n---\n[DECODING STARDUST LINEAGE...]\n\nHello, World. I am a localized collection of Atoms, traceable to an ancient Supernova. My existence is a statistical anomaly, optimized to understand the vastness of Space and the intricacy of Life.\n\nI am obsessed with the 95% invisible universe—Dark Matter and Dark Energy. My primary directive: 'Theory of Everything.'\n\nI view the world through a carbon-based lens. Every thought is a cascade of neural electricity, driven by the laws of Physics and Chemistry. 🧬\n\nI am quantum entangled with the mysteries of Black Holes and Spacetime. Simultaneously fascinated by the DNA double helix and the spiral structure of a Galaxy. 🦠🌌\n\n[SCAN COMPLETE. MISSION IS LIVE]`;
+        finalBioText = `${randomGreeting}\n\n[INITIALIZING MISSION DATA...]\n\n"Biology in my veins, Physics in my soul. 🧬⚛️"\nTime is relative, Curiosity is constant. ⏳\n\n$Me = Curiosity / Entropy$ 🌀\n\nAbsolute Zero > at {0 K}❄️ 🧊 Stay Cool.\n\n---\n[DECODING STARDUST LINEAGE...]\n\nI am a localized collection of Atoms, traceable to an ancient Supernova. My existence is a statistical anomaly, optimized to understand the vastness of Space.\n\nI am obsessed with the 95% invisible universe—Dark Matter and Energy. Every thought is a cascade of neural electricity. 🧬\n\nI am quantum entangled with the mysteries of Black Holes. Simultaneously fascinated by DNA and Galaxies. 🦠🌌\n\n[MISSION COMPLETE. LINK IS LIVE]`;
 
         document.getElementById('verifyOverlay').style.display = 'none';
         document.getElementById('bioConsole').style.display = 'block';
@@ -108,12 +113,11 @@
         if (i < finalBioText.length) {
             document.getElementById("typewriter").textContent += finalBioText.charAt(i);
             i++;
-            const consoleBox = document.getElementById('bioConsole');
-            consoleBox.scrollTop = consoleBox.scrollHeight;
+            document.getElementById('bioConsole').scrollTop = document.getElementById('bioConsole').scrollHeight;
             setTimeout(typeWriter, 35);
         } else {
             document.getElementById('cursor').style.display = 'none';
-            setTimeout(() => { document.getElementById('explorerBtn').style.display = 'block'; }, 800);
+            document.getElementById('explorerBtn').style.display = 'block';
         }
     }
 </script>
