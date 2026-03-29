@@ -2,389 +2,266 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>S.U.N.I.L | Interstellar Portal</title>
     <style>
-        /* CSS Variables for Consistency */
         :root {
-            --hacker-green: #00ff00;
-            --hacker-green-dim: rgba(0, 255, 0, 0.7);
-            --text-white: #ffffff;
-            --glass: rgba(0, 0, 0, 0.7);
-            --border-glass: rgba(255, 255, 255, 0.1);
+            --neon-green: #00ff41;
+            --dim-green: rgba(0, 255, 65, 0.2);
+            --bg-black: #000800;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body, html { height: 100%; overflow: hidden; background: #000; font-family: 'Courier New', Courier, monospace; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        /* 🌌 ANIMATED GALAXY BACKGROUND - NO EXTERNAL IMAGES */
-        .deep-space-bg {
+        body, html { 
+            height: 100%; 
+            width: 100%;
+            background-color: var(--bg-black);
+            font-family: 'Courier New', Courier, monospace;
+            color: var(--neon-green);
+            overflow: hidden;
+        }
+
+        /* 🌌 DYNAMIC STARFIELD BACKGROUND */
+        #starfield {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -100;
-            background: radial-gradient(ellipse at 20% 50%, rgba(25, 0, 51, 0.8) 0%, rgba(0, 0, 0, 1) 50%),
-                        radial-gradient(ellipse at 80% 80%, rgba(0, 25, 51, 0.6) 0%, rgba(0, 0, 0, 1) 50%),
-                        linear-gradient(135deg, #0a0e27 0%, #000000 100%);
-            overflow: hidden;
-        }
-
-        /* Animated Stars */
-        .stars {
-            position: absolute;
-            width: 100%;
-            height: 100%;
+            z-index: 1;
+            background: radial-gradient(circle at center, #001500 0%, #000000 100%);
         }
 
         .star {
             position: absolute;
-            background: radial-gradient(circle, white, transparent);
+            background: white;
             border-radius: 50%;
-            animation: twinkle 3s infinite;
+            opacity: 0.5;
+            animation: twinkle var(--duration) infinite ease-in-out;
         }
 
         @keyframes twinkle {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) translateX(0px); }
-            50% { transform: translateY(-20px) translateX(10px); }
+        /* 🛡️ SECURITY OVERLAY */
+        #verifyOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.9);
+            transition: opacity 0.8s ease, visibility 0.8s;
         }
 
-        /* Glassmorphic Tiles */
-        .glass-tile { 
+        .glass-panel {
+            width: 85%;
+            max-width: 400px;
+            padding: 30px;
+            background: rgba(0, 20, 0, 0.8);
+            border: 1px solid var(--neon-green);
+            border-radius: 15px;
+            box-shadow: 0 0 20px var(--dim-green);
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        h2 { font-size: 1.2rem; letter-spacing: 3px; margin-bottom: 10px; text-transform: uppercase; }
+        .status-line { font-size: 0.7rem; color: var(--dim-green); margin-bottom: 25px; animation: blink 1.5s infinite; }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            text-align: center;
+            font-family: inherit;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            background: transparent;
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            cursor: pointer;
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover { background: var(--neon-green); color: black; box-shadow: 0 0 15px var(--neon-green); }
+
+        /* 🛰️ BIO CONSOLE */
+        #bioConsole {
             position: relative;
             z-index: 10;
-            background: var(--glass);
-            border: 1px solid var(--border-glass); 
-            border-radius: 12px; 
-            box-shadow: 0 0 30px rgba(0, 255, 0, 0.1); 
-            backdrop-filter: blur(10px);
-            animation: float 6s ease-in-out infinite;
-        }
-        
-        /* Verification Overlay */
-        #verifyOverlay { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            z-index: 1000; 
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-        }
-
-        .verify-box { 
-            width: 85%; 
-            max-width: 400px; 
-            text-align: center; 
-            border: 2px solid var(--hacker-green); 
-            padding: 40px; 
-            background: rgba(0, 0, 0, 0.9);
+            width: 90%;
+            max-width: 800px;
+            margin: 4vh auto;
+            height: 85vh;
+            display: none; /* Initially hidden */
+            flex-direction: column;
+            background: rgba(0, 5, 0, 0.85);
+            border: 1px solid var(--dim-green);
+            padding: 25px;
             border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
-            animation: slideDown 0.6s ease-out;
+            box-shadow: 0 0 40px rgba(0,0,0,1);
         }
 
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .verify-box h2 {
-            color: var(--hacker-green);
-            font-size: 20px;
-            margin-bottom: 10px;
-            text-shadow: 0 0 10px var(--hacker-green);
-        }
-
-        .verify-box p {
-            font-size: 11px;
-            color: var(--hacker-green-dim);
-            margin-bottom: 25px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.7; }
-            50% { opacity: 1; }
-        }
-
-        input { 
-            width: 90%; 
-            padding: 12px; 
-            margin: 20px auto; 
-            display: block;
-            background: rgba(0, 255, 0, 0.05); 
-            border: 1px solid var(--hacker-green); 
-            color: var(--hacker-green); 
-            text-align: center; 
-            font-family: inherit;
-            border-radius: 5px;
-            transition: all 0.3s;
-        }
-
-        input:focus {
-            outline: none;
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
-            background: rgba(0, 255, 0, 0.1);
-        }
-
-        button { 
-            padding: 12px 30px; 
-            background: transparent; 
-            border: 2px solid var(--hacker-green); 
-            color: var(--hacker-green); 
-            cursor: pointer; 
-            text-transform: uppercase; 
-            letter-spacing: 2px; 
-            font-family: inherit;
-            font-weight: bold;
-            transition: all 0.3s;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
-            margin-top: 10px;
-        }
-
-        button:hover { 
-            background: var(--hacker-green); 
-            color: #000; 
-            box-shadow: 0 0 25px rgba(0, 255, 0, 0.8);
-            transform: scale(1.05);
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-        /* Bio Console */
-        #bioConsole { 
-            width: 90%; 
-            max-width: 900px; 
-            margin: 5vh auto; 
-            display: none; 
-            max-height: 80vh; 
-            overflow-y: auto; 
-            padding: 40px; 
-            animation: fadeIn 0.8s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .typing-text { 
-            font-size: 14px; 
-            line-height: 2; 
-            color: var(--hacker-green); 
-            white-space: pre-wrap; 
-            word-wrap: break-word;
-            text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-        }
-
-        .cursor { 
-            display: inline-block; 
-            width: 10px; 
-            height: 18px; 
-            background: var(--hacker-green);
-            margin-left: 3px;
-            animation: blink 0.7s infinite;
-            box-shadow: 0 0 10px var(--hacker-green);
-        }
-
-        @keyframes blink { 
-            0%, 100% { opacity: 1; } 
-            50% { opacity: 0; } 
-        }
-        
-        /* Explorer Button */
-        #explorerBtn { 
-            position: fixed; 
-            bottom: 20px; 
-            right: 20px; 
-            display: none; 
-            z-index: 1100;
-            animation: slideIn 0.5s ease-out;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(100px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .nav-btn { 
-            padding: 12px 20px; 
-            background: rgba(0, 0, 0, 0.9); 
-            border: 2px solid var(--hacker-green); 
-            color: var(--hacker-green); 
-            cursor: pointer; 
-            border-radius: 5px; 
-            font-family: inherit; 
-            font-size: 12px; 
-            text-transform: uppercase;
-            font-weight: bold;
-            transition: all 0.3s;
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
-            letter-spacing: 1px;
-        }
-
-        .nav-btn:hover {
-            box-shadow: 0 0 30px rgba(0, 255, 0, 0.8);
-            transform: scale(1.08);
-            background: rgba(0, 255, 0, 0.1);
-        }
-
-        /* Custom Scrollbar */
-        #bioConsole::-webkit-scrollbar { 
-            width: 6px; 
-        }
-
-        #bioConsole::-webkit-scrollbar-track {
-            background: rgba(0, 255, 0, 0.05);
-        }
-
-        #bioConsole::-webkit-scrollbar-thumb { 
-            background: rgba(0, 255, 0, 0.3);
-            border-radius: 3px;
-        }
-
-        #bioConsole::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 255, 0, 0.6);
-        }
-
-        /* Header Styling */
         .console-header {
-            text-align: center; 
-            border-bottom: 2px solid var(--hacker-green); 
-            margin-bottom: 30px; 
-            padding-bottom: 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--dim-green);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
         }
 
-        .console-header h1 {
-            letter-spacing: 8px; 
-            margin: 0; 
-            color: var(--hacker-green); 
-            font-size: 32px;
-            text-shadow: 0 0 20px var(--hacker-green);
+        .console-header h1 { font-size: 1.8rem; letter-spacing: 10px; color: white; }
+        .console-header p { font-size: 0.6rem; letter-spacing: 2px; color: var(--neon-green); margin-top: 5px; opacity: 0.7; }
+
+        #typewriter-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            font-size: 14px;
+            line-height: 1.8;
+            padding-right: 10px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--neon-green) transparent;
         }
 
-        .console-header p {
-            font-size: 11px; 
-            color: rgba(0, 255, 0, 0.6); 
-            margin: 10px 0 0 0;
-            letter-spacing: 3px;
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 15px;
+            background: var(--neon-green);
+            animation: blink 0.8s infinite;
+            vertical-align: middle;
         }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* 🪐 NASA BUTTON */
+        #explorerBtn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            display: none;
+        }
+
+        .nasa-btn {
+            padding: 10px 15px;
+            background: black;
+            border: 1px solid white;
+            color: white;
+            font-size: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            border-radius: 5px;
+        }
+
+        /* SCROLLBAR */
+        #typewriter-container::-webkit-scrollbar { width: 3px; }
+        #typewriter-container::-webkit-scrollbar-thumb { background: var(--neon-green); }
     </style>
 </head>
 <body>
 
-<div class="deep-space-bg">
-    <div class="stars" id="starsContainer"></div>
-</div>
+    <div id="starfield"></div>
 
-<div id="verifyOverlay">
-    <div class="glass-tile verify-box">
-        <h2>⚛️ IDENTITY CHECK ⚛️</h2>
-        <p>[ CONNECTING TO LANIKEA NETWORK... ]</p>
-        <input type="text" id="uName" placeholder="ENTER YOUR ALIAS" autocomplete="off">
-        <button onclick="startMission()">Initialize Portal</button>
+    <div id="verifyOverlay">
+        <div class="glass-panel">
+            <h2>{ S.U.N.I.L }</h2>
+            <p class="status-line">[ SECURE ACCESS TERMINAL ]</p>
+            <input type="text" id="userInput" placeholder="ENTER ALIAS (NAME)" autocomplete="off">
+            <button class="btn" onclick="startSequence()">Login</button>
+        </div>
     </div>
-</div>
 
-<div id="bioConsole" class="glass-tile">
-    <div class="console-header">
-        <h1>{ S.U.N.I.L }</h1>
-        <p>SINGULARITY • UNIVERSE • NUCLEUS • ION • LIFE</p>
+    <div id="bioConsole">
+        <div class="console-header">
+            <h1>{ S.U.N.I.L }</h1>
+            <p>SINGULARITY • UNIVERSE • NUCLEUS • ION • LIFE</p>
+        </div>
+        <div id="typewriter-container">
+            <span id="output"></span><span class="cursor" id="cursor"></span>
+        </div>
     </div>
-    <div id="typewriter" class="typing-text"></div><span class="cursor" id="cursor"></span>
-</div>
 
-<div id="explorerBtn">
-    <button class="nav-btn" onclick="window.open('https://eyes.nasa.gov/apps/solar-system/#/home', '_blank')">🪐 Explore Universe</button>
-</div>
+    <div id="explorerBtn">
+        <button class="nasa-btn" onclick="window.open('https://eyes.nasa.gov/apps/solar-system/#/home', '_blank')">Explore Space 🪐</button>
+    </div>
 
 <script>
-    // Generate Random Stars
-    function generateStars() {
-        const starsContainer = document.getElementById('starsContainer');
-        for (let i = 0; i < 150; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            star.style.width = Math.random() * 2 + 'px';
-            star.style.height = star.style.width;
-            star.style.left = Math.random() * 100 + '%';
-            star.style.top = Math.random() * 100 + '%';
-            star.style.animationDelay = Math.random() * 3 + 's';
-            starsContainer.appendChild(star);
-        }
+    // 1. Create Starfield
+    const field = document.getElementById('starfield');
+    for (let i = 0; i < 120; i++) {
+        let star = document.createElement('div');
+        star.className = 'star';
+        let size = Math.random() * 3;
+        star.style.width = size + 'px';
+        star.style.height = size + 'px';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+        field.appendChild(star);
     }
 
-    generateStars();
-
+    // 2. Logic Control
     let i = 0;
-    let finalBioText = "";
+    let bioText = "";
+    const output = document.getElementById('output');
+    const container = document.getElementById('typewriter-container');
 
-    function startMission() {
-        const name = document.getElementById('uName').value;
-        if (!name.trim()) { 
-            alert("[ ACCESS DENIED: IDENTIFY YOURSELF ]"); 
-            return; 
-        }
-        
+    function startSequence() {
+        const name = document.getElementById('userInput').value.trim();
+        if (!name) { alert("[ ERROR: NAME REQUIRED ]"); return; }
+
         const greetings = [
-            `[CONNECTION SUCCESSFUL]\nWelcome, ${name}! Your atoms were once part of the same star as mine. It's an honor to meet a fellow traveler of the cosmos. ✨`,
-            `[ACCESS GRANTED]\nGreetings, ${name}! Out of all the galaxies and timelines, I'm glad our coordinates crossed today. 🌌`,
-            `[PORTAL OPENED]\nHello, ${name}. Your presence adds a beautiful spark of curiosity to this entropy-driven universe. ⚛️`,
-            `[STABLE LINK]\nWelcome aboard, ${name}! Stationed on the 3rd rock from the G2V star, I've been waiting for a brilliant mind like yours. 🛰️`
+            `[AUTH] Welcome, ${name}. Your atoms are ancient.`,
+            `[AUTH] Greetings, ${name}. Coordinates locked.`,
+            `[AUTH] Hello, ${name}. Entropy is stable.`
         ];
         
-        const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+        const welcome = greetings[Math.floor(Math.random() * greetings.length)];
 
-        finalBioText = `${randomGreeting}\n\n[INITIALIZING MISSION DATA...]\n\n"Biology in my veins, Physics in my soul." 🧬⚛️\nTime is relative, Curiosity is constant. ⏳⚛️\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n📡 ABOUT ME:\nI'm a curious mind lost in the cosmos of code and creativity. \nBy day: Problem solver. By night: Stargazer. Always: Dreamer.\n\n🔬 SKILLS:\n→ Web Development | JavaScript | Python\n→ Physics Enthusiast | Astronomy Nerd\n→ UI/UX Designer | Creative Thinker\n\n🌟 MISSION:\nTo bridge the gap between technology and imagination.\nTo build portals that connect minds across the universe.\n\n💫 CURRENT LOCATION:\nOrbiting the Interstellar Web\n\n🚀 NEXT DESTINATION:\nThe intersection of science and art.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nThanks for stopping by, ${name}.\nRemember: We are made of stardust. \nAct accordingly. 🌌\n\n[END TRANSMISSION]";
+        bioText = `${welcome}\n\n[INITIALIZING DATA TRANSMISSION...]\n\n"Biology in my veins, Physics in my soul." 🧬⚛️\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nMe = Curiosity / Entropy 🌀\nAbsolute Zero > at {0 K} ❄️\n\n[DECODING STARDUST LINEAGE...]\n\nI am a localized collection of Atoms, traceable to an ancient Supernova. My existence is a statistical anomaly, optimized to understand the vastness of Space.\n\nI am obsessed with the 95% invisible universe—Dark Matter and Energy. Every thought is a neural spark of electricity. 🧬\n\nI am quantum entangled with the mysteries of Black Holes. Simultaneously fascinated by DNA and Galaxies. 🦠🌌\n\n[END OF TRANSMISSION]\n[PORTAL FULLY ACTIVE]`;
 
-        document.getElementById('verifyOverlay').style.display = 'none';
-        document.getElementById('bioConsole').style.display = 'block';
-        typeWriter();
+        // Hide login, show console
+        document.getElementById('verifyOverlay').style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('verifyOverlay').style.display = 'none';
+            document.getElementById('bioConsole').style.display = 'flex';
+            typeWriter();
+        }, 800);
     }
 
     function typeWriter() {
-        if (i < finalBioText.length) {
-            document.getElementById("typewriter").textContent += finalBioText.charAt(i);
+        if (i < bioText.length) {
+            output.textContent += bioText.charAt(i);
             i++;
-            document.getElementById('bioConsole').scrollTop = document.getElementById('bioConsole').scrollHeight;
-            setTimeout(typeWriter, 35);
+            container.scrollTop = container.scrollHeight;
+            setTimeout(typeWriter, 30);
         } else {
             document.getElementById('cursor').style.display = 'none';
-            setTimeout(() => { 
-                document.getElementById('explorerBtn').style.display = 'block'; 
-            }, 800);
+            document.getElementById('explorerBtn').style.display = 'block';
         }
     }
 
-    // Allow Enter key to submit
-    document.getElementById('uName').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') startMission();
+    // Enter key support
+    document.getElementById('userInput').addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') startSequence();
     });
 </script>
 
